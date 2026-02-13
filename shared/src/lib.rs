@@ -159,24 +159,25 @@ impl State {
 pub struct Command {
     pub description: &'static str,
     pub function: fn(&mut State, &[&str]) -> color_eyre::Result<()>,
-    is_subcommand: bool,
-    has_subcommands: bool,
-    subcommands: Option<Vec<Command>>,
+    // is_subcommand: bool,
+    // has_subcommands: bool,
+    // subcommands: Option<Vec<Command>>,
 }
 
 impl Command {
     pub fn new(
         description: &'static str,
         function: fn(&mut State, &[&str]) -> color_eyre::Result<()>,
-        is_subcommand: bool,
-        has_subcommands: bool,
-        subcommands: Option<Vec<Command>>) -> Self {
+        // is_subcommand: bool,
+        // has_subcommands: bool,
+        // subcommands: Option<Vec<Command>>,
+    ) -> Self {
         Self {
             description,
             function,
-            is_subcommand,
-            has_subcommands,
-            subcommands
+            // is_subcommand,
+            // has_subcommands,
+            // subcommands
         }
     }
 }

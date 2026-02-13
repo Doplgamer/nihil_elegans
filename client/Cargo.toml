@@ -1,6 +1,6 @@
 [package]
 name = "client"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 
 [dependencies]
@@ -9,9 +9,10 @@ shared = { path = "../shared" }
 hickory-client = "0.26.0-alpha.1"
 
 # Async
-futures = "0.3.31"
 tokio = { version = "1.49.0", features = ["full"] }
 
 color-eyre = "0.6.5"
+
+clap = { version = "4.5.58", features = ["derive"] }
 reedline = "0.45.0"
 inquire = "0.9.3"

@@ -8,13 +8,15 @@ use shared::{Action, decrypt};
 
 // TODO make connecting optionally locked behind a password
 pub struct MyHandler {
-    sender: Sender<Action>
+    sender: Sender<Action>,
+    xor_key: String,
 }
 
 impl MyHandler {
-    pub fn new(sender: Sender<Action>) -> Self {
+    pub fn new(sender: Sender<Action>, xor_key: String) -> Self {
         Self {
-            sender
+            sender,
+            xor_key
         }
     }
 }
@@ -29,7 +31,7 @@ impl RequestHandler for MyHandler {
             Action::Log(
                 format!("Decrypting message: {}",
                         String::from_utf8_lossy(
-                            &decrypt(vec![message_name.to_string().to_uppercase()], b"bababooey")
+                            &decrypt(vec![message_name.to_string().to_uppercase()], self.xor_key.as_bytes())
                             .unwrap_or("Error: Could not decrypt".into())
                         )
                 ))).await.ok();

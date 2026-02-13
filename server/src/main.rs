@@ -1,3 +1,5 @@
+use std::net::{IpAddr, SocketAddr};
+use clap::Parser;
 use hickory_server::ServerFuture;
 use inquire::Confirm;
 use reedline::{ExternalPrinter, Reedline, Signal};
@@ -15,24 +17,42 @@ mod commands;
 mod handler;
 mod prompt;
 
+#[derive(Parser)]
+pub struct CliArgs {
+    /// Host Address
+    #[arg(short, long, value_parser, default_value = "127.0.0.1")]
+    address: IpAddr,
+    /// Listening Port (Run with root access to use port 53)
+    #[arg(short, long, value_parser, default_value = "5053")]
+    port: u16,
+    /// XOR Key used to encrypt data
+    #[arg(long, default_value = "sisyphean")]
+    xor_key: String,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     color_eyre::install()?;
-    
+    let cli_args = CliArgs::parse();
+
     let (sender, mut receiver) = tokio::sync::mpsc::channel(100);
 
     let commands = init_commands();
     let printer = ExternalPrinter::new(32);
     let event_printer = printer.clone();
-    
+
     let app_state = State::new(commands, &printer, sender.clone());
 
-    let server_addr = "0.0.0.0:5053"; // TODO add this to clap once we implement that
-    let handler = MyHandler::new(app_state.sender.clone());
+    let handler = MyHandler::new(app_state.sender.clone(), cli_args.xor_key);
     let mut server = ServerFuture::new(handler);
 
-    let addr = tokio::net::UdpSocket::bind(server_addr).await?;
-    server.register_socket(addr);
+    let server_addr = SocketAddr::new(
+        cli_args.address,
+        cli_args.port,
+    );
+
+    let socket = tokio::net::UdpSocket::bind(server_addr).await?;
+    server.register_socket(socket);
 
     let mut line_editor = Reedline::create()
         .with_external_printer(printer);
@@ -82,7 +102,7 @@ async fn main() -> Result<()> {
 
         Ok(())
     });
-    
+
     let event_handle = tokio::task::spawn(async move {
         loop {
             select! {

@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use shared::{Command, CommandMap, State};
 
 fn exit(state: &mut State, _args: &[&str]) -> color_eyre::Result<()> {
-    state.printer.print("Exit called!".into())?;
     println!("Exit called!");
     state.exit = true;
     
@@ -26,8 +25,12 @@ fn help(state: &mut State, _args: &[&str]) -> color_eyre::Result<()> {
 
 pub fn init_commands() -> CommandMap {
     let mut commands: CommandMap = HashMap::new();
-    commands.insert("exit", Command::new("Stops the server", exit, false, false, None));
-    commands.insert("help", Command::new("Shows this menu", help, false, false, None));
+    commands.insert("exit", Command::new("Stops the server", exit,
+                                         // false, false, None
+    ));
+    commands.insert("help", Command::new("Shows this menu", help,
+                                         // false, false, None
+    ));
 
     commands
 }
