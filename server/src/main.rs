@@ -59,8 +59,7 @@ async fn main() -> Result<()> {
     let mut prompt = NihilPrompt::new(app_state);
 
     print_banner("Server");
-    // TODO make DNS it's own command (with subcommands)
-    prompt.state.printer.print(format!("Up and running at: {}", server_addr).into())?;
+    println!("Up and running at: {}", server_addr);
 
     let reedline_handle = tokio::task::spawn_blocking(move || -> Result<()> {
         while !prompt.state.exit {
